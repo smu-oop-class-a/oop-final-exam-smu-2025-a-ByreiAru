@@ -1,29 +1,212 @@
 name: Autograding Tests
-'on':
-- push
-- repository_dispatch
+
+on:
+  push:
+  workflow_dispatch:
+  repository_dispatch:
+
 permissions:
   checks: write
   actions: read
   contents: read
+
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Exam Evaluator
-      id: exam-evaluator
+
+    # ========================================================
+    # 1. PersonModel (7 Points Total)
+    # ========================================================
+    - name: PersonModel Class & Properties (5 pts)
+      id: person-class
       uses: classroom-resources/autograding-command-grader@v1
       with:
-        test-name: Exam Evaluator
-        setup-command: ''
-        command: "./ExamEvaluator.ps1"
+        test-name: PersonModel Class
+        # Checks for Class definition AND Id, FirstName, LastName
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Model/PersonModel.cs' -Raw;
+          if( ($c -match 'class\s+PersonModel') -and ($c -match 'Id') -and ($c -match 'FirstName') -and ($c -match 'LastName') ) { exit 0 } else { exit 1 }"
         timeout: 10
+        max-score: 5
+
+    - name: PersonModel SQLite Attributes (2 pts)
+      id: person-attribs
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: PersonModel Attributes
+        # Checks for PrimaryKey and AutoIncrement
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Model/PersonModel.cs' -Raw;
+          if( ($c -match '\[PrimaryKey\]') -and ($c -match 'AutoIncrement') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 2
+
+    # ========================================================
+    # 2. DirectorModel (6 Points Total)
+    # ========================================================
+    - name: DirectorModel Inheritance (3 pts)
+      id: director-inherit
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorModel Inheritance
+        # Checks if DirectorModel inherits PersonModel
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Model/DirectorModel.cs' -Raw;
+          if( $c -match 'class\s+DirectorModel\s*:\s*PersonModel' ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    - name: DirectorModel Properties (3 pts)
+      id: director-props
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorModel Properties
+        # Checks for Genres and TotalMoviesCreated
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Model/DirectorModel.cs' -Raw;
+          if( ($c -match 'Genres') -and ($c -match 'TotalMoviesCreated') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    # ========================================================
+    # 3. DirectorRepository (12 Points Total)
+    # ========================================================
+    - name: DirectorRepo Constructor (3 pts)
+      id: repo-ctor
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorRepo Constructor
+        # Checks for SQLiteConnection and CreateTable (ensure not commented)
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Repository/DirectorRepository.cs' -Raw;
+          if( ($c -match 'new\s*SQLiteConnection') -and ($c -match '\.CreateTable') -and -not ($c -match '//.*new\s*SQLiteConnection') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    - name: DirectorRepo AddDirector (3 pts)
+      id: repo-add
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorRepo AddDirector
+        # Checks for Insert method
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Repository/DirectorRepository.cs' -Raw;
+          if( ($c -match 'Insert') -and -not ($c -match '//.*Insert') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    - name: DirectorRepo GetAll (3 pts)
+      id: repo-getall
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorRepo GetAll
+        # Checks for Table and ToList
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Repository/DirectorRepository.cs' -Raw;
+          if( ($c -match '\.Table') -and ($c -match '\.ToList') -and -not ($c -match '//.*\.Table') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    - name: DirectorRepo GetById (3 pts)
+      id: repo-getbyid
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorRepo GetById
+        # Checks for Find method
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Repository/DirectorRepository.cs' -Raw;
+          if( ($c -match '\.Find') -and -not ($c -match '//.*\.Find') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    # ========================================================
+    # 4. DirectorForm (9 Points Total)
+    # ========================================================
+    - name: DirectorForm Controls (3 pts)
+      id: form-controls
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorForm Controls
+        # Checks Designer file for control names
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs' -Raw;
+          if( ($c -match 'txtFirstName') -and ($c -match 'txtLastName') -and ($c -match 'txtGenres') -and ($c -match 'numTotalMovies') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    - name: DirectorForm GetDirector (3 pts)
+      id: form-getdirector
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorForm GetDirector
+        # Checks mapping logic
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Views/DirectorForm.cs' -Raw;
+          if( ($c -match 'public.*GetDirector') -and ($c -match 'FirstName') -and ($c -match 'return') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    - name: DirectorForm Validation (3 pts)
+      id: form-validation
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: DirectorForm Validation
+        # Checks for validation logic in Save Click
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Views/DirectorForm.cs' -Raw;
+          if( ($c -match 'BtnSave_Click') -and ($c -match 'IsNullOrWhiteSpace') -and ($c -match 'MessageBox.Show') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 3
+
+    # ========================================================
+    # 5. SettingsForm (4 Points Total)
+    # ========================================================
+    - name: SettingsForm Load (4 pts)
+      id: settings-load
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: SettingsForm Load
+        # Checks LoadDirectorsToGrid logic
+        command: |
+          pwsh -Command "
+          $c = Get-Content 'OOP.FinalTerm.Exam/Views/SettingsForm.cs' -Raw;
+          if( ($c -match 'LoadDirectorsToGrid') -and ($c -match 'GetAllDirectors') -and ($c -match 'dgvDirectors') ) { exit 0 } else { exit 1 }"
+        timeout: 10
+        max-score: 4
+
+    # ========================================================
+    # 6. Compilation (2 Points Total)
+    # ========================================================
+    - name: Project Compilation (2 pts)
+      id: compilation
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Project Compilation
+        # Attempts to build the project
+        command: "dotnet build ./OOP.FinalTerm.Exam/OOP.FinalTerm.Exam.csproj"
+        timeout: 30
+        max-score: 2
+
+    # ========================================================
+    # Reporter
+    # ========================================================
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
-      env:
-        EXAM-EVALUATOR_RESULTS: "${{steps.exam-evaluator.outputs.result}}"
       with:
-        runners: exam-evaluator
+        runners: person-class,person-attribs,director-inherit,director-props,repo-ctor,repo-add,repo-getall,repo-getbyid,form-controls,form-getdirector,form-validation,settings-load,compilation
