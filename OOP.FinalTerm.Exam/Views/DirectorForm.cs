@@ -68,6 +68,13 @@ namespace OOP.FinalTerm.Exam.Views
                 return;
             }
 
+            if (numTotalMovies.Value == 0) {
+                MessageBox.Show("Total movies should be above 0.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                numTotalMovies.Focus();
+                return;
+            }
+
             _directorRepository.AddDirector(GetDirector());
 
             this.DialogResult = DialogResult.OK;
