@@ -13,48 +13,39 @@ namespace OOP.FinalTerm.Exam
         private readonly Color _darkBackground = Color.FromArgb(20, 20, 20);
         private readonly Color _hoverColor = Color.FromArgb(50, 50, 50);
 
-        public SettingsForm(IMovieRepository movieRepository)
-        {
+        public SettingsForm(IMovieRepository movieRepository) {
             InitializeComponent();
             _movieRepository = movieRepository;
             _directorRepository = new DirectorRepository();
             ApplyNetflixTheme();
         }
 
-        private void SettingsForm_Load(object sender, EventArgs e)
-        {
+        private void SettingsForm_Load(object sender, EventArgs e) {
             LoadMoviesToGrid();
             LoadDirectorsToGrid();
         }
 
         #endregion
 
-        private void LoadMoviesToGrid()
-        {
-            try
-            {
+        private void LoadMoviesToGrid() {
+            try {
                 dgvMovies.DataSource = _movieRepository.GetAllMovies();
                 dgvMovies.Columns["Cover"].Visible = false;
                 dgvMovies.Columns["Description"].Width = 200;
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 MessageBox.Show($"Error loading movies: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void LoadDirectorsToGrid()
-        {
-            try
-            {
-                //TODO: Students will implement this method to load directors into dgvDirectors using _directorRepository.GetAllDirectors()
-                //refer to LoadMoviesToGrid() method for guidance
-                //hide director id
-               //dgvDirectors.DataSource = 
+        private void LoadDirectorsToGrid() {
+            try {
+                var directors = _directorRepository.GetAllDirectors();
+                dgvDirectors.DataSource = directors;
+                if (dgvDirectors.Columns.Contains("Id")) {
+                    dgvDirectors.Columns["Id"].Visible = false;
+                }
 
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 MessageBox.Show($"Error loading directors: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
