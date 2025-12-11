@@ -57,7 +57,6 @@ namespace OOP.FinalTerm.Exam.Views
             if (string.IsNullOrWhiteSpace(txtLastName.Text)) {
                 MessageBox.Show("Last Name is required.", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
                 txtLastName.Focus();
                 return;
             }
@@ -65,7 +64,6 @@ namespace OOP.FinalTerm.Exam.Views
             if (string.IsNullOrWhiteSpace(txtGenres.Text)) {
                 MessageBox.Show("Genre is required.", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
                 txtGenres.Focus();
                 return;
             }

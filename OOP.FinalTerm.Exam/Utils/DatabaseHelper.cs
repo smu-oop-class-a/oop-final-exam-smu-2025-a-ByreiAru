@@ -10,9 +10,7 @@ namespace OOP.FinalTerm.Exam.Utils
             string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string databaseFolder = Path.Combine(projectDirectory, "Database");
 
-            // Create the Database folder if it doesn't exist
-            if (!Directory.Exists(databaseFolder))
-            {
+            if (!Directory.Exists(databaseFolder)) {
                 Directory.CreateDirectory(databaseFolder);
             }
 
